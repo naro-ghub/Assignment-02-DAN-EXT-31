@@ -146,20 +146,133 @@ def parse(tokens):
 # ===== Andy: EVALUATION + OUTPUT =====
 
 def evaluate_tree(tree):
-    pass
+    if tree[0] == "num":
+        return float(tree[1])
+
+    if tree[0] == "neg":
+        return -evaluate_tree(tree[1])
+
+    if tree[0] == "bin":
+        left = evaluate_tree(tree[2])
+        right = evaluate_tree(tree[3])
+        operator = tree[1]
+
+        if operator == "+":
+            return left + right
+
+        elif operator == "-":
+            return left - right
+
+        elif operator == "*":
+            return left * right
+
+        elif operator == "/":
+            return left / right
+
+        elif operator == "%":
+            return left % right
+
+        elif operator == "^":
+            return left ** right
 
 
 def tree_to_string(tree):
-    pass
+    if tree[0] == "num":
+        return format_number(float(tree[1]))
+
+    if tree[0] == "neg":
+        child = tree_to_string(tree[1])
+        return f"(neg {child})"
+
+    if tree[0] == "bin":
+        operator = tree[1]
+        left = tree_to_string(tree[2])
+        right = tree_to_string(tree[3])
+
+        return f"({operator} {left} {right})"
 
 
 def tokens_to_string(tokens):
-    pass
+    parts = []
+
+    for token_type, token_value in tokens:
+        if token_type == "END":
+            parts.append("[END]")
+        else:
+            parts.append(f"[{token_type}:{token_value}]")
+
+    return " ".join(parts)
 
 
 def format_number(value):
-    pass
+    if value.is_integer():
+        return str(int(value))
+
+    return str(round(value, 4))
 
 
 def evaluate_file(input_path: str) -> list[dict]:
-    pass
+    results = []
+
+    # Read expressions from the input file
+    with open(input_path, "r") as file:
+        expressions = file.read().splitlines()
+
+    for expression in expressions:
+
+        try:
+            # Vinh's part
+            tokens = tokenize(expression)
+            tree = parse(tokens)
+
+            # Your part
+            tree_text = tree_to_string(tree)
+            token_text = tokens_to_string(tokens)
+
+            try:
+                value = evaluate_tree(tree)
+                result_value = value
+
+            except ArithmeticError:
+                result_value = "ERROR"
+
+        except (ValueError, IndexError):
+            tree_text = "ERROR"
+            token_text = "ERROR"
+            result_value = "ERROR"
+
+        # Save this expression's information
+        results.append({
+            "input": expression,
+            "tree": tree_text,
+            "tokens": token_text,
+            "result": result_value
+        })
+
+    # Create output.txt in the same folder as input_path
+    import os
+
+    output_path = os.path.join(
+        os.path.dirname(input_path),
+        "output.txt"
+    )
+
+    with open(output_path, "w") as file:
+        for result in results:
+            file.write(f"Input: {result['input']}\n")
+            file.write(f"Tree: {result['tree']}\n")
+            file.write(f"Tokens: {result['tokens']}\n")
+
+            if result["result"] == "ERROR":
+                file.write("Result: ERROR\n")
+            else:
+                file.write(
+                    f"Result: {format_number(result['result'])}\n"
+                )
+
+            file.write("\n")
+
+    return results
+
+if __name__ == "__main__":
+    evaluate_file("sample_input.txt")
