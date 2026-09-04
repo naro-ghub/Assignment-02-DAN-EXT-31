@@ -145,6 +145,9 @@ def parse(tokens):
 
 # ===== Andy: EVALUATION + OUTPUT =====
 
+import os
+
+
 def evaluate_tree(tree):
     if tree[0] == "num":
         return float(tree[1])
@@ -214,18 +217,14 @@ def format_number(value):
 def evaluate_file(input_path: str) -> list[dict]:
     results = []
 
-    # Read expressions from the input file
     with open(input_path, "r") as file:
         expressions = file.read().splitlines()
 
     for expression in expressions:
-
         try:
-            # Vinh's part
             tokens = tokenize(expression)
             tree = parse(tokens)
 
-            # Your part
             tree_text = tree_to_string(tree)
             token_text = tokens_to_string(tokens)
 
@@ -241,16 +240,12 @@ def evaluate_file(input_path: str) -> list[dict]:
             token_text = "ERROR"
             result_value = "ERROR"
 
-        # Save this expression's information
         results.append({
             "input": expression,
             "tree": tree_text,
             "tokens": token_text,
             "result": result_value
         })
-
-    # Create output.txt in the same folder as input_path
-    import os
 
     output_path = os.path.join(
         os.path.dirname(input_path),
@@ -274,5 +269,6 @@ def evaluate_file(input_path: str) -> list[dict]:
 
     return results
 
+
 if __name__ == "__main__":
-    evaluate_file("sample_input.txt")
+    evaluate_file("input.txt")
