@@ -120,9 +120,22 @@ def verify_files(original_path, decrypted_path):
         print("Verification failed: Files do not match.")
         return False
 
+def get_non_negative_integer(prompt):
+    while True:
+        try:
+            value = int(input(prompt))
+
+            if value < 0:
+                print("Invalid input. Please enter a non-negative integer.")
+            else:
+                return value
+
+        except ValueError:
+            print("Invalid input. Please enter a whole number.")
+
 def main():
-    shift1 = int(input("Enter shift1: "))
-    shift2 = int(input("Enter shift2: "))
+    shift1 = get_non_negative_integer("Enter shift1: ")
+    shift2 = get_non_negative_integer("Enter shift2: ")
     
     encrypt_file(
         shift1,
