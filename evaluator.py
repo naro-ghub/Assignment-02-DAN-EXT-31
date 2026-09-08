@@ -230,7 +230,11 @@ def evaluate_file(input_path: str) -> list[dict]:
 
             try:
                 value = evaluate_tree(tree)
-                result_value = value
+
+                if isinstance(value, complex):
+                    result_value = "ERROR"
+                else:
+                    result_value = value
 
             except ArithmeticError:
                 result_value = "ERROR"
